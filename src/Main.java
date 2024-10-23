@@ -1,356 +1,512 @@
-import AbstractFactoryDesignPattern.AbstractVehicleFactory;
-import AbstractFactoryDesignPattern.Car;
-import AbstractFactoryDesignPattern.FordFactoryAbstract;
-import AbstractFactoryDesignPattern.TeslaFactoryAbstract;
-import AbstractFactoryDesignPattern.Truck;
-import AdapterDesignPattern.AudioPlayer;
-import AdapterDesignPattern.MediaPlayer;
-import ChainOfResponsibilityDesignPattern.DebugLogger;
-import ChainOfResponsibilityDesignPattern.ErrorLogger;
-import ChainOfResponsibilityDesignPattern.InfoLogger;
-import ChainOfResponsibilityDesignPattern.Logger;
-import CommandDesignPattern.Command;
-import CommandDesignPattern.Light;
-import CommandDesignPattern.LightOffCommand;
-import CommandDesignPattern.LightOnCommand;
-import CommandDesignPattern.RemoteControl;
-import CompositeDesignPattern.Circle;
-import CompositeDesignPattern.CompositeGraphic;
-import CompositeDesignPattern.Graphic;
-import CompositeDesignPattern.Square;
-import DecoratorDesignPattern.MilkDecorator;
-import DecoratorDesignPattern.SimpleCoffee;
-import DecoratorDesignPattern.SugarDecorator;
-import FacadeDesignPattern.DvdPlayer;
-import FacadeDesignPattern.HomeTheaterFacade;
-import FacadeDesignPattern.Lights;
-import FacadeDesignPattern.Projector;
-import FacadeDesignPattern.SoundSystem;
-import FactoryDesignPattern.CarFactory;
-import FactoryDesignPattern.TruckFactory;
-import FactoryDesignPattern.VehicleFactory;
-import FlyWeightDesignPattern.Tree;
-import FlyWeightDesignPattern.TreeFactory;
-import FlyWeightDesignPattern.TreeType;
-import InterpretDesignPattern.AdditionExpression;
-import InterpretDesignPattern.Expression;
-import InterpretDesignPattern.NumberExpression;
-import InterpretDesignPattern.SubtractionExpression;
-import IteratordesignPattern.Book;
-import IteratordesignPattern.Iterator;
-import IteratordesignPattern.Library;
-import MediatorPattern.ChatMediator;
-import MediatorPattern.ChatMediatorImpl;
-import MediatorPattern.User;
-import MediatorPattern.UserImpl;
-import NullObjectDesignPattern.Customer;
-import NullObjectDesignPattern.CustomerFactory;
-import ObserverDesignPattern.CurrentConditionsDisplay;
-import ObserverDesignPattern.ForecastDisplay;
-import ObserverDesignPattern.WeatherStation;
-import ProxyDesignPattern.Database;
-import ProxyDesignPattern.SecureDatabaseProxy;
-import StateDesignPattern.Coin;
-import StateDesignPattern.State;
-import StateDesignPattern.VendingMachine;
-import StrategyPattern.CashPayment;
-import StrategyPattern.CreditCardPayment;
-import StrategyPattern.Item;
-import StrategyPattern.PayPalPayment;
-import StrategyPattern.ShoppingCart;
-import TemplateDesignPattern.CaffeineBeverage;
-import TemplateDesignPattern.Coffee;
-import TemplateDesignPattern.Tea;
-import MementoDesignPattern.*;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        System.out.println("Hello world!");
-
-
-        //Mediater design pattern
-        ChatMediator chatMediator = new ChatMediatorImpl();
-
-        User user = new UserImpl(chatMediator, "1", "Joseph");
-        User user2 = new UserImpl(chatMediator, "2", "Mighty");
-        User user3 = new UserImpl(chatMediator, "3", "Raina");
-
-        chatMediator.addUser(user);
-        chatMediator.addUser(user2);
-        chatMediator.addUser(user3);
-
-        user.sendMessage("hello", "1");
-        System.out.println("");
-
-        //Stratergy design patern
-        ShoppingCart shoppingCart = new ShoppingCart();
-        shoppingCart.addItem(new Item(10, "shoe"));
-        shoppingCart.addItem(new Item(20, "lays"));
-
-        shoppingCart.pay(new CashPayment("Joseph"));
-
-        shoppingCart.pay(new CreditCardPayment("1232", "Joseph"));
-
-        shoppingCart.pay(new PayPalPayment("spourgeon@gmail.com", "Mighty"));
-
-        System.out.println("");
-        //State Design pattern
-
-
-        VendingMachine vendingMachine = new VendingMachine();
-        vendingMachine.getInventory().addItem(new Item(10, "lays"));
-        vendingMachine.getInventory().addItem(new Item(5, "biscuit"));
-
-        List<Coin> coinList = new ArrayList<>();
-        coinList.add(Coin.DIME);
-        coinList.add(Coin.NICKEL);
-
-        State vedingMachineState = vendingMachine.getVendingMachineState();
-        vedingMachineState.clickOnInsertCoinButton(vendingMachine);
-
-        vedingMachineState = vendingMachine.getVendingMachineState();
-        vedingMachineState.insertCoin(vendingMachine, Coin.NICKEL);
-
-        vedingMachineState.insertCoin(vendingMachine, Coin.NICKEL);
-
-        vedingMachineState.clickOnStartProductSelectionButton(vendingMachine);
-
-        vedingMachineState = vendingMachine.getVendingMachineState();
-        vedingMachineState.chooseProduct(vendingMachine, "lays");
-        System.out.println("");
-
-        //template desingn pattern
-
-        CaffeineBeverage tea = new Tea();
-        tea.prepareRecipe();
-
-        CaffeineBeverage coffee = new Coffee();
-        coffee.prepareRecipe();
-
-        //observer design pattern
-        WeatherStation weatherStation = new WeatherStation();
-
-        CurrentConditionsDisplay currentDisplay = new CurrentConditionsDisplay();
-        ForecastDisplay forecastDisplay = new ForecastDisplay();
-
-        weatherStation.addObserver(currentDisplay);
-        weatherStation.addObserver(forecastDisplay);
-
-        weatherStation.setMeasurements(25.5f, 65f, 1013f);
-
-
-        System.out.println("removed observer");
-        weatherStation.removeObserver(forecastDisplay);
-
-        weatherStation.setMeasurements(27.0f, 70f, 1010f);
-
-        System.out.println("");
-        //Decorator Pattern
-
-        DecoratorDesignPattern.Coffee coffee1 = new MilkDecorator(new SugarDecorator(new SimpleCoffee()));
-        DecoratorDesignPattern.Coffee coffee2 = new MilkDecorator(new SimpleCoffee());
-        System.out.println(coffee1.getDescription());
-        System.out.println("cost is" + coffee1.getCost());
-        System.out.println(coffee2.getDescription());
-        System.out.println("cost 2 is" + coffee2.getCost());
-
-        //Chain Of responsibility principle
-
-        Logger logger = new InfoLogger();
-        Logger errorLogger = new ErrorLogger();
-        Logger debugLogger = new DebugLogger();
-        logger.setNextLogger(errorLogger);
-        errorLogger.setNextLogger(debugLogger);
-
-        logger.logMessage(1, "Hello");
-        logger.logMessage(2, "Hello");
-        logger.logMessage(3, "Hello");
-
-        System.out.println("");
-        //Factory Design Pattern
-
-        VehicleFactory vehicleFactory = new CarFactory();
-        vehicleFactory.driveVehicle();
-        VehicleFactory vehicleFactory1 = new TruckFactory();
-        vehicleFactory1.driveVehicle();
-
-
-        System.out.println("");
-        //Abstract Design Pattern
-
-        AbstractVehicleFactory fordFactory = new FordFactoryAbstract();
-        Car fordCar = fordFactory.createCar();
-        Truck fordTruck = fordFactory.createTruck();
-        fordCar.drive();
-        fordTruck.drive();
-
-        AbstractVehicleFactory teslaFactory = new TeslaFactoryAbstract();
-        Car teslaCar = teslaFactory.createCar();
-        Truck teslaTruck = teslaFactory.createTruck();
-        teslaCar.drive();
-        teslaTruck.drive();
-
-        System.out.println("");
-
-
-        //Proxy Design Pattern
-
-        Database adminProxy = new SecureDatabaseProxy("ADMIN");
-        System.out.println("Admin trying to access the database:");
-        adminProxy.fetchData();  // Output: Fetching sensitive data from the database.
-
-        // User with GUEST role
-        Database guestProxy = new SecureDatabaseProxy("GUEST");
-        System.out.println("\nGuest trying to access the database:");
-        guestProxy.fetchData();
-
-        System.out.println("");
-
-        //Null Object Design Pattern
-        Customer customer1 = CustomerFactory.getCustomer("John");
-        Customer customer2 = CustomerFactory.getCustomer("Doe");
-
-        System.out.println("Customers:");
-        System.out.println(customer1.getName());  // John
-        System.out.println(customer2.getName());  // Not Available
-
-        System.out.println("");
-
-
-        //Adapter Design Pattern
-        MediaPlayer audioPlayer = new AudioPlayer();
-
-        audioPlayer.play("mp3", "song.mp3"); // Playing MP3 file: song.mp3
-        audioPlayer.play("vlc", "movie.vlc"); // Playing VLC file: movie.vlc
-        audioPlayer.play("avi", "video.avi"); // Invalid media type: avi
-
-        System.out.println("");
-
-        //Composite Design Pattern
-
-        Graphic circle = new Circle();
-        Graphic square = new Square();
-
-
-        CompositeGraphic compositeGraphic = new CompositeGraphic();
-        compositeGraphic.add(circle);
-        compositeGraphic.add(square);
-
-        // Draw individual shapes
-        circle.draw();  // Output: Drawing a Circle
-        square.draw();  // Output: Drawing a Square
-
-        // Draw composite shapes
-        compositeGraphic.draw();
-        System.out.println("");
-
-
-        //Facade Design Pattern
-        Projector projector = new Projector();
-        SoundSystem soundSystem = new SoundSystem();
-        DvdPlayer dvdPlayer = new DvdPlayer();
-        Lights lights = new Lights();
-
-
-        // Create the facade
-        HomeTheaterFacade homeTheater = new HomeTheaterFacade(projector, soundSystem, dvdPlayer, lights);
-
-        homeTheater.watchMovie("Inception");
-        homeTheater.endMovie();
-
-        System.out.println("");
-
-        //FlyWeight Design Pattern
-
-        List<Tree> trees = new ArrayList<>();
-
-        // Create 1,000 trees with shared types
-        for (int i = 0; i < 1000; i++) {
-            TreeType type = TreeFactory.getTreeType("Oak", "Green", "Rough");
-            trees.add(new Tree(i, i + 10, type));
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        ExecutorService executorService = Executors.newFixedThreadPool(3);
+
+        // Submit Runnable task
+        executorService.submit(() -> {
+            System.out.println("Runnable Task Executed");
+        });
+
+        // Submit Callable task and get the result
+        Future<Integer> future = executorService.submit(() -> {
+            System.out.println("Callable Task Executed");
+            return 42;  // Returning a result from the Callable
+        });
+
+        // Get the result of the Callable
+        Integer result = future.get();  // Blocks until the result is available
+        System.out.println("Result of Callable: " + result);
+
+        // Shut down the ExecutorService gracefully
+
+        //Running tasks continue to execute and Pending tasks (queued but not started) will execute.
+        executorService.shutdown();
+        if (executorService.awaitTermination(5, TimeUnit.SECONDS)) {
+            System.out.println("All tasks completed.");
+        } else {
+            System.out.println("Timeout: Forcing shutdown.");
+
+            //Attempts to stop running tasks by interrupting them and Pending tasks are returned and do not execute.
+            executorService.shutdownNow();
         }
 
 
-        // Display all trees
-        for (Tree tree : trees) {
-            tree.display();
+        //creates a thread pool that can dynamically allocate new threads when needed.
+        // It does not impose a fixed limit on the number of threads and
+        // will reuse previously created threads when they become available.
+        // Create a cached thread pool
+        //this can cause unlimited threads
+        ExecutorService executor = Executors.newCachedThreadPool();
+
+        // Submit multiple tasks
+        for (int i = 0; i < 5; i++) {
+            executor.submit(new Task(i));
         }
 
-        System.out.println("");
+        // Shutdown the executor after tasks are submitted
+        executor.shutdown();
 
-        //Iterator Design Pattern
 
-        Library library = new Library(5);
+        //even if we submit multiple  tasks , they will get executed one by one
+        ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
 
-        library.addBook(new Book("1984", "George Orwell"));
-        library.addBook(new Book("Brave New World", "Aldous Huxley"));
-        library.addBook(new Book("Fahrenheit 451", "Ray Bradbury"));
-
-        Iterator<Book> bookIterator = library.createIterator();
-
-        while (bookIterator.hasNext()) {
-            Book book = bookIterator.next();
-            System.out.println(book);
+        // Submit multiple tasks
+        for (int i = 0; i < 5; i++) {
+            singleThreadExecutor.submit(new Task(i));
         }
 
-        System.out.println("");
-
-        //Memento Design Pattern
-        TextEditor textEditor = new TextEditor();
-        TextEditorHistory history = new TextEditorHistory();
-
-        textEditor.setContent("First Version");
-        history.save(textEditor);  // Save state
-
-        textEditor.setContent("Second Version");
-        history.save(textEditor);  // Save state
-
-        textEditor.setContent("Third Version");
-
-        System.out.println("Current Content: " + textEditor.getContent());
-
-        // Undo to the last saved state
-        history.undo(textEditor);
-        System.out.println("After Undo: " + textEditor.getContent());
-
-        // Undo to the first saved state
-        history.undo(textEditor);
-        System.out.println("After Second Undo: " + textEditor.getContent());
+        // Shutdown the executor after tasks are submitted
+        singleThreadExecutor.shutdown();
 
 
-        //Interpreter design pattern
+        // we also has tryLock() in this do as expected if we cannot create lock
+        //ReentrantLock lock = new ReentrantLock(true); // Fair lock we need to pass true in constructor
+        //In a fair lock, the longest-waiting thread gets the lock first,
+        // but fair locking can lead to reduced throughput as the system must manage the queue of waiting threads.
+        ReentrantLockExample example = new ReentrantLockExample();
 
-        Expression five = new NumberExpression(5);
-        Expression three = new NumberExpression(3);
-        Expression two = new NumberExpression(2);
+        // Create and start multiple threads that will use the same lock
+        Thread t1 = new Thread(example::performTask, "Thread-1");
+        Thread t2 = new Thread(example::performTask, "Thread-2");
 
-        Expression addExpression = new AdditionExpression(five, three); // 5 + 3
-        Expression subtractExpression = new SubtractionExpression(addExpression, two); // (5 + 3) - 2
+        t1.start();
+        t2.start();
 
-        // Evaluate the expression
-        int result = subtractExpression.interpret();
-        System.out.println("Result: " + result); // Output: 6
 
-        //Command design pattern
+        //Read and Write Locks:
+        //Read Lock: Allows multiple threads to read the shared resource simultaneously, as long as there are no threads writing to it.
+        //Write Lock: Allows only one thread to write to the shared resource. During this time, no other thread can read or write.
 
-        Light livingRoomLight = new Light();
+        ReadWriteLockExample example1 = new ReadWriteLockExample();
 
-        // Create concrete commands
-        Command lightOnCommand = new LightOnCommand(livingRoomLight);
-        Command lightOffCommand = new LightOffCommand(livingRoomLight);
+        // Create threads for reading and writing
+        Thread writerThread = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                example1.writeData(i);
+                try {
+                    Thread.sleep(500); // Simulate time taken to write
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "Writer-Thread");
 
-        // Create invoker (remote control)
-        RemoteControl remote = new RemoteControl();
+        Thread readerThread1 = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                example1.readData();
+                try {
+                    Thread.sleep(300); // Simulate time taken to read
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "Reader-Thread-1");
 
-        // Turn the light on
-        remote.setCommand(lightOnCommand);
-        remote.pressButton(); // Output: The light is on
+        Thread readerThread2 = new Thread(() -> {
+            for (int i = 0; i < 5; i++) {
+                example1.readData();
+                try {
+                    Thread.sleep(400); // Simulate time taken to read
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "Reader-Thread-2");
 
-        // Turn the light off
-        remote.setCommand(lightOffCommand);
-        remote.pressButton();
+        writerThread.start();
+        readerThread1.start();
+        readerThread2.start();
+
+        ConditionExample example2 = new ConditionExample();
+
+        Thread waiter = new Thread(example2::awaitThreshold, "Waiter-Thread");
+        Thread incrementer = new Thread(() -> {
+            for (int i = 0; i < 10; i++) {
+                example2.increment();
+                try {
+                    Thread.sleep(500); // Simulate time taken to increment
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }, "Incrementer-Thread");
+
+        waiter.start();
+        incrementer.start();
+
+
+        //atomic integer example
+        //private AtomicLong counter = new AtomicLong(0); similar t this
+        //AtomicReference<T> is used to hold an object reference atomically.
+        // It’s particularly useful when you want to perform atomic operations on non-primitive objects,
+        // such as updating a reference to a mutable object or doing compare-and-swap (CAS) on object references.
+
+        AtomicInteger count = new AtomicInteger(0);
+
+
+        Thread at1 = new Thread(() -> {
+            int newValue = count.incrementAndGet(); // Atomically increments by 1
+            System.out.println(Thread.currentThread().getName() + " incremented count to: " + newValue);
+        }, "Thread-1");
+        Thread at2 = new Thread(() -> {
+            int newValue = count.incrementAndGet(); // Atomically increments by 1
+            System.out.println(Thread.currentThread().getName() + " incremented count to: " + newValue);
+        }, "Thread-2");
+
+        at1.start();
+        at2.start();
+
+
+        AtomicReferenceExample example10 = new AtomicReferenceExample();
+
+        // Create new person objects
+        Person newPerson1 = new Person("Alice");
+        Person newPerson2 = new Person("Bob");
+        Person oldPerson = new Person("John");
+
+        // Thread that attempts to update the person reference using compareAndSet
+        Thread ar1 = new Thread(() -> example10.compareAndSetPerson(oldPerson, newPerson1), "Thread-1");
+
+        // Another thread that directly updates the person reference
+        Thread ar2 = new Thread(() -> example10.updatePerson(newPerson2), "Thread-2");
+
+        // Start both threads
+        ar1.start();
+        ar2.start();
+
+        // Wait for threads to complete
+        ar1.join();
+        ar2.join();
+
+        // Display final person reference
+        System.out.println("Final person is: " + example10.getPerson());
+
+
+        //Concurrent HashMap does not support  null keys and null values
+        //It provides atomic operations like putIfAbsent, computeIfAbsent, and replace.
+        //The code submits five threads, each trying to add 1000 entries to the HashMap.
+        // However, due to the lack of synchronization, when two or more threads try to update the same bucket simultaneously,
+        // it can lead to unpredictable behavior. instead of 1000 entries we will get 985 something like that
+        ConcurrentHashMapExample exampleMap = new ConcurrentHashMapExample();
+
+        // Thread 1 adds employees to the map
+        Thread ch1 = new Thread(() -> {
+            exampleMap.addEmployee("Alice", 50000);
+            exampleMap.addEmployee("Bob", 60000);
+        }, "Thread-1");
+
+        // Thread 2 retrieves employee salaries
+        Thread ch2 = new Thread(() -> {
+            exampleMap.getSalary("Alice");
+            exampleMap.getSalary("Bob");
+        }, "Thread-2");
+
+        // Thread 3 updates salary of Bob
+        Thread ch3 = new Thread(() -> exampleMap.updateSalaryIfPresent("Bob", 70000), "Thread-3");
+
+        // Thread 4 attempts to remove Alice based on salary
+        Thread ch4 = new Thread(() -> exampleMap.removeEmployeeIfSalaryMatches("Alice", 50000), "Thread-4");
+
+        // Start the threads
+        ch1.start();
+        ch2.start();
+        ch3.start();
+        ch4.start();
+
+        // Join threads to ensure main waits for completion
+        ch1.join();
+        ch2.join();
+        ch3.join();
+        ch4.join();
+
+        // Final state of the map
+        System.out.println("Final employee map: " + exampleMap.getMap());
+
+
+        //CopyOnWriteArrayList
+        //concurrent modification error wont come
+        //Adds new elements ("David" and "Eve") to the list while the reader thread is iterating.
+        // Each write creates a new copy of the list, so the reader will not see the new elements during iteration,
+        // but subsequent iterations after modifications will reflect the new list.
+        CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<>();
+
+        // Add elements to the list
+        list.add("Alice");
+        list.add("Bob");
+        list.add("Charlie");
+
+        // Create a thread that reads from the list
+        Thread readerThread = new Thread(() -> {
+            for (String name : list) {
+                System.out.println(Thread.currentThread().getName() + " reading: " + name);
+                try {
+                    Thread.sleep(100);  // Simulate some work
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+
+        // Create a thread that modifies the list
+        Thread writerThread1 = new Thread(() -> {
+            System.out.println(Thread.currentThread().getName() + " adding: David");
+            list.add("David");
+            System.out.println(Thread.currentThread().getName() + " adding: Eve");
+            list.add("Eve");
+        });
+
+        // Start the threads
+        readerThread.start();
+        writerThread1.start();
+
+        // Wait for the threads to finish
+        readerThread.join();
+        writerThread1.join();
+
+        // Final state of the list
+        System.out.println("Final list: " + list);
+
+
+        //BlockingQueue
+        // Create a BlockingQueue with a capacity of 5
+        BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(5);
+
+        // Producer Thread: Adds elements to the queue
+        Thread producer = new Thread(() -> {
+            try {
+                for (int i = 1; i <= 10; i++) {
+                    System.out.println("Producing: " + i);
+                    queue.put(i); // Adds element, waits if the queue is full
+                    Thread.sleep(500); // Simulate some delay
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        // Consumer Thread: Retrieves elements from the queue
+        Thread consumer = new Thread(() -> {
+            try {
+                for (int i = 1; i <= 10; i++) {
+                    Integer item = queue.take(); // Retrieves element, waits if the queue is empty
+                    System.out.println("Consuming: " + item);
+                    Thread.sleep(1000); // Simulate some delay
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        // Start both producer and consumer threads
+        producer.start();
+        consumer.start();
+
+        // Wait for both threads to complete
+        producer.join();
+        consumer.join();
+
+
+        //Future example
+        ExecutorService executorFuture = Executors.newSingleThreadExecutor();
+
+        // Submit a Callable task that returns a result
+        Future<Integer> futureResult = executorFuture.submit(new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                // Simulate long-running task
+                Thread.sleep(2000);
+                return 42;
+            }
+        });
+
+        // Do something else while the task runs
+        System.out.println("Task submitted. Doing other work...");
+
+        // Now we can retrieve the result using Future.get() (it will wait if necessary)
+        Integer result1 = futureResult.get(); // This will block until the task is done
+        System.out.println("Result of the task: " + result1);
+
+        // Shutdown the executor
+        executorFuture.shutdown();
+
+
+        //ScheduledExecutedService allows us to schedule tasks to run after a delay or at fixed intervals.
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+        // Schedule a task to run after a delay of 3 seconds
+        scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Task executed after 3 seconds delay.");
+            }
+        }, 3, TimeUnit.SECONDS);
+
+        // Schedule a task to run repeatedly with an initial delay of 1 second, then every 2 seconds
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Task executed at fixed rate of 2 seconds.");
+            }
+        }, 1, 2, TimeUnit.SECONDS);
+
+        // Optionally, you can shut down the scheduler after some time
+        scheduler.schedule(() -> {
+            System.out.println("Shutting down scheduler...");
+            scheduler.shutdown();
+        }, 10, TimeUnit.SECONDS);
+
+
+        //Semaphore is a synchronization aid that controls access to a shared resource through the use of a counter.
+        // It allows a specified number of threads to access the resource concurrently.
+        // Create a Semaphore with 2 permits
+        //If your thread catches InterruptedException and does not reset the interrupted status,
+        // any subsequent checks for whether the thread was interrupted will return false,
+        // which could lead to undesired behavior, especially in multi-threaded environments.
+        Semaphore semaphore = new Semaphore(2);
+
+        Runnable task = () -> {
+            try {
+                // Acquire a permit
+                semaphore.acquire();
+                System.out.println(Thread.currentThread().getName() + " acquired a permit.");
+
+                // Simulate work
+                Thread.sleep(2000);
+
+                System.out.println(Thread.currentThread().getName() + " releasing a permit.");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                // Release the permit
+                semaphore.release();
+            }
+        };
+
+        // Start 5 threads
+        for (int i = 0; i < 5; i++) {
+            new Thread(task, "Thread-" + (i + 1)).start();
+        }
+
+        // CountDownLatch is initialized with a count of 3, meaning the main thread will wait for 3 worker threads to finish their tasks.
+        //Each worker thread simulates some work and calls countDown() when it finishes.
+        //The main thread waits on latch.await(), which blocks until the count reaches zero.
+
+        CountDownLatch latch = new CountDownLatch(3);
+
+        Runnable task1 = () -> {
+            try {
+                // Simulate work
+                Thread.sleep((long) (Math.random() * 1000));
+                System.out.println(Thread.currentThread().getName() + " finished work.");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } finally {
+                // Decrease the count of the latch
+                latch.countDown();
+            }
+        };
+
+        // Start 3 threads
+        for (int i = 0; i < 3; i++) {
+            new Thread(task1, "Worker-" + (i + 1)).start();
+        }
+
+        // Wait for all threads to finish
+        latch.await();
+        System.out.println("All workers have finished their tasks.");
+
+
+        //A CyclicBarrier is set up for 3 threads. Once all 3 threads reach the barrier, they will proceed together.
+        //The Runnable task simulates work and then calls barrier.await(), which causes the thread to wait at the barrier until all participating threads have called it.
+        //Once all threads arrive, the barrier releases them, and the specified action (printing a message) is executed.
+        // Create a CyclicBarrier for 3 threads
+
+        //Main difference of countdown latch is aftee count becoming 0 we cannot make 3 or some count automatically by cyclic barrier does by giving any 3 threads access it
+        CyclicBarrier barrier = new CyclicBarrier(3, () -> {
+            System.out.println("All parties have arrived at the barrier. Proceeding...");
+        });
+
+        Runnable taskCyclic = () -> {
+            try {
+                // Simulate work
+                Thread.sleep((long) (Math.random() * 1000));
+                System.out.println(Thread.currentThread().getName() + " reached the barrier.");
+
+                // Wait at the barrier
+                barrier.await();
+            } catch (Exception e) {
+                Thread.currentThread().interrupt();
+            }
+        };
+
+        // Start 3 threads
+        for (int i = 0; i < 9; i++) {
+            new Thread(taskCyclic, "Worker-" + (i + 1)).start();
+        }
+
+        //out put will be like this
+        //Worker-6 reached the barrier.
+        //Worker-9 reached the barrier.
+        //Worker-5 reached the barrier.
+        //All parties have arrived at the barrier. Proceeding...
+        //Worker-8 reached the barrier.
+        //Worker-2 reached the barrier.
+        //Worker-1 reached the barrier.
+        //All parties have arrived at the barrier. Proceeding...
+        //Worker-7 reached the barrier.
+        //Worker-3 reached the barrier.
+        //Worker-4 reached the barrier.
+        //All parties have arrived at the barrier. Proceeding...
+
+
+        //The Fork/Join framework is a powerful concurrency framework in Java designed to take advantage of multiple processors for parallel computing.
+        // It allows you to split a task into smaller subtasks (forking) and then join the results of those subtasks together once they have been completed.
+        // This approach is particularly effective for tasks that can be recursively divided into smaller tasks, making it ideal for divide-and-conquer algorithms.
+
+
+        ThreadLocal<String> threadLocalValue = ThreadLocal.withInitial(() -> "Default Value");
+
+        // Create two threads that will use the ThreadLocal variable
+        Thread threadl1 = new Thread(() -> {
+            // Set a value for thread 1
+            threadLocalValue.set("Thread 1 Value");
+            System.out.println("Thread 1: " + threadLocalValue.get());
+        });
+
+        Thread threadl2 = new Thread(() -> {
+            // Set a value for thread 2
+            threadLocalValue.set("Thread 2 Value");
+            System.out.println("Thread 2: " + threadLocalValue.get());
+        });
+
+        // Start both threads
+        threadl1.start();
+        threadl2.start();
+
+        try {
+            // Wait for both threads to finish
+            threadl1.join();
+            threadl2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Print the default value in the main thread
+        System.out.println("Main Thread: " + threadLocalValue.get());
     }
 }
